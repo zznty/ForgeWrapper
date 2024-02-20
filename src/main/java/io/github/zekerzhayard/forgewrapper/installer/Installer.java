@@ -40,7 +40,7 @@ public class Installer {
         return data;
     }
 
-    public static boolean install(File libraryDir, File minecraftJar, File installerJar) throws Throwable {
+    public static boolean install(File libraryDir, File minecraftJar, File installerJar, String launchTarget) throws Throwable {
         ProgressCallback monitor = ProgressCallback.withOutputs(System.out);
         if (System.getProperty("java.net.preferIPv4Stack") == null) {
             System.setProperty("java.net.preferIPv4Stack", "true");
@@ -52,8 +52,10 @@ public class Installer {
         monitor.message("java.net.preferIPv4Stack=" + System.getProperty("java.net.preferIPv4Stack"));
         monitor.message("Current Time: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
 
+        boolean isClient = launchTarget.equals("forgeclient") || launchTarget.equals("forge_client");
+
         // MinecraftForge has removed all old installers since 2024/2/27, but they still exist in NeoForge.
-        PostProcessors processors = new PostProcessors(wrapper, true, monitor);
+        PostProcessors processors = new PostProcessors(wrapper, isClient, monitor);
         Method processMethod = PostProcessors.class.getMethod("process", File.class, File.class, File.class, File.class);
         if (boolean.class.equals(processMethod.getReturnType())) {
             return (boolean) processMethod.invoke(processors, libraryDir, minecraftJar, libraryDir.getParentFile(), installerJar);

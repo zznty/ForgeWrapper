@@ -31,6 +31,7 @@ public class Main {
         String forgeVersionKey = isNeoForge ? "--fml.neoForgeVersion" : "--fml.forgeVersion";
         String forgeVersion = argsList.get(argsList.indexOf(forgeVersionKey) + 1);
         String forgeFullVersion = isNeoForge ? forgeVersion : mcVersion + "-" + forgeVersion;
+        String launchTarget = argsList.get(argsList.indexOf("--launchTarget") + 1);
 
         IFileDetector detector = DetectorLoader.loadDetector();
         // Check installer jar.
@@ -60,10 +61,10 @@ public class Main {
                 t.printStackTrace();
             }
 
-            if (!((boolean) installer.getMethod("install", File.class, File.class, File.class).invoke(null, detector.getLibraryDir().toFile(), minecraftJar.toFile(), installerJar.toFile()))) {
+            if (argsList.contains("--setup")) {
+                installer.getMethod("install", File.class, File.class, File.class, String.class).invoke(null, detector.getLibraryDir().toFile(), minecraftJar.toFile(), installerJar.toFile(), launchTarget);
                 return;
             }
-
             ModuleUtil.setupClassPath(detector.getLibraryDir(), (List<String>) data.get("extraLibraries"));
             Class<?> mainClass = ModuleUtil.setupBootstrapLauncher(Class.forName((String) data.get("mainClass")));
             mainClass.getMethod("main", String[].class).invoke(null, new Object[] {args});
