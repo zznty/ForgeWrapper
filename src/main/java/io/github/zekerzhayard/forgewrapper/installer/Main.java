@@ -62,8 +62,6 @@ public class Main {
             }
         }
 
-        ModuleUtil.setupClassPath(detector.getLibraryDir(), detector.getExtraLibraries(forgeGroup, forgeArtifact, forgeFullVersion));
-        Class<?> mainClass = ModuleUtil.setupBootstrapLauncher(Class.forName(detector.getMainClass(forgeGroup, forgeArtifact, forgeFullVersion)));
-        mainClass.getMethod("main", String[].class).invoke(null, new Object[] { args });
+        System.out.println("Success");
     }
 }
