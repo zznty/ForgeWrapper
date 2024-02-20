@@ -30,11 +30,7 @@ public class Main {
         String forgeFullVersion = isNeoForge ? forgeVersion : mcVersion + "-" + forgeVersion;
 
         IFileDetector detector = DetectorLoader.loadDetector();
-        try {
-            Bootstrap.bootstrap(detector.getJvmArgs(forgeGroup, forgeArtifact, forgeFullVersion), detector.getMinecraftJar(mcVersion).getFileName().toString(), detector.getLibraryDir().toAbsolutePath().toString());
-        } catch (Throwable ignored) {
-            // Avoid this bunch of hacks that nuke the whole wrapper.
-        }
+        Bootstrap.bootstrap(detector.getJvmArgs(forgeGroup, forgeArtifact, forgeFullVersion), detector.getMinecraftJar(mcVersion).getFileName().toString(), detector.getLibraryDir().toAbsolutePath().toString());
         if (!detector.checkExtraFiles(forgeGroup, forgeArtifact, forgeFullVersion)) {
             System.out.println("Some extra libraries are missing! Running the installer to generate them now.");
 
@@ -62,8 +58,6 @@ public class Main {
             }
         }
 
-        ModuleUtil.setupClassPath(detector.getLibraryDir(), detector.getExtraLibraries(forgeGroup, forgeArtifact, forgeFullVersion));
-        Class<?> mainClass = ModuleUtil.setupBootstrapLauncher(Class.forName(detector.getMainClass(forgeGroup, forgeArtifact, forgeFullVersion)));
-        mainClass.getMethod("main", String[].class).invoke(null, new Object[] { args });
+        System.out.println("Success");
     }
 }

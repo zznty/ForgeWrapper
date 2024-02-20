@@ -21,7 +21,37 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew build -iS
-      - uses: actions/upload-artifact@v2
+
+      - name: Get short SHA
+        id: slug
+        run: echo "::set-output name=sha7::$(echo ${{ github.sha }} | cut -c1-7)"
+        
+      - name: Get artifact path
+        id: artifact
+        run: echo "::set-output name=path::$(ls build/libs/*.jar | tail -n 1)"
+
+      - name: Create Draft Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: Package
-          path: build/libs
+          tag_name: ${{ steps.slug.outputs.sha7 }}
+          release_name: Forge Wrapper
+          draft: true
+          prerelease: false
+
+      - uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.artifact.outputs.path }}
+          asset_name: ForgeWrapper.jar
+          asset_content_type: application/zip
+
+      - uses: eregon/publish-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ steps.create_release.outputs.id }}
