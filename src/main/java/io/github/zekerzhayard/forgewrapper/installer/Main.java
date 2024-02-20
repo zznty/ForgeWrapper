@@ -63,10 +63,6 @@ public class Main {
             if (!((boolean) installer.getMethod("install", File.class, File.class, File.class).invoke(null, detector.getLibraryDir().toFile(), minecraftJar.toFile(), installerJar.toFile()))) {
                 return;
             }
-
-            ModuleUtil.setupClassPath(detector.getLibraryDir(), (List<String>) data.get("extraLibraries"));
-            Class<?> mainClass = ModuleUtil.setupBootstrapLauncher(Class.forName((String) data.get("mainClass")));
-            mainClass.getMethod("main", String[].class).invoke(null, new Object[] {args});
         }
     }
 
